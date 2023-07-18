@@ -1,6 +1,7 @@
 # Chatbot UI
 
-Chatbot UI is an open source chat UI for AI models.
+Chatbot UI is an open source chat UI for AI models. This fork replaces the OpenAI key entry from UI with Auth0 based login.
+The access token is used to call the server API which in turn calls OpenAI API. This allows implementation of multi-tenant chat.
 
 See a [demo](https://twitter.com/mckaywrigley/status/1640380021423603713?s=46&t=AowqkodyK6B4JccSOxSPew).
 
@@ -59,7 +60,14 @@ npm i
 Create a .env.local file in the root of the repo with your OpenAI API Key:
 
 ```bash
-OPENAI_API_KEY=YOUR_KEY
+NEXT_PUBLIC_AUTH0_DOMAIN=YOUR AUTH0 DOMAIN
+NEXT_PUBLIC_AUTH0_CLIENT_ID=AUTH0 CLIENT ID
+NEXT_PUBLIC_AUTH0_AUDIENCE=Audience for your API configured in Auth0
+NEXT_PUBLIC_API_URL=URL FOR SERVER API
+NEXT_PUBLIC_BASE_URL=URL OF THIS APP
+OPENAI_API_HOST=OPEN AI KEY
+OPENAI_API_KEY=openchat-dummy-key
+NEXT_PUBLIC_DEFAULT_TEMPERATURE=0.7
 ```
 
 > You can set `OPENAI_API_HOST` where access to the official OpenAI host is restricted or unavailable, allowing users to configure an alternative host for their specific needs.
