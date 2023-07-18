@@ -12,7 +12,7 @@ import { Key } from '../../Settings/Key';
 import { SidebarButton } from '../../Sidebar/SidebarButton';
 import ChatbarContext from '../Chatbar.context';
 import { ClearConversations } from './ClearConversations';
-import { PluginKeys } from './PluginKeys';
+import { LogoutButton } from './LogoutButton';
 
 export const ChatbarSettings = () => {
   const { t } = useTranslation('sidebar');
@@ -20,10 +20,7 @@ export const ChatbarSettings = () => {
 
   const {
     state: {
-      apiKey,
       lightMode,
-      serverSideApiKeyIsSet,
-      serverSidePluginKeysSet,
       conversations,
     },
     dispatch: homeDispatch,
@@ -33,7 +30,6 @@ export const ChatbarSettings = () => {
     handleClearConversations,
     handleImportConversations,
     handleExportData,
-    handleApiKeyChange,
   } = useContext(ChatbarContext);
 
   return (
@@ -56,11 +52,7 @@ export const ChatbarSettings = () => {
         onClick={() => setIsSettingDialog(true)}
       />
 
-      {!serverSideApiKeyIsSet ? (
-        <Key apiKey={apiKey} onApiKeyChange={handleApiKeyChange} />
-      ) : null}
-
-      {!serverSidePluginKeysSet ? <PluginKeys /> : null}
+      <LogoutButton />
 
       <SettingDialog
         open={isSettingDialogOpen}

@@ -19,9 +19,12 @@ import PromptbarContext from './PromptBar.context';
 import { PromptbarInitialState, initialState } from './Promptbar.state';
 
 import { v4 as uuidv4 } from 'uuid';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const Promptbar = () => {
   const { t } = useTranslation('promptbar');
+
+  const { isAuthenticated } = useAuth0();
 
   const promptBarContextValue = useCreateReducer<PromptbarInitialState>({
     initialState,
@@ -125,7 +128,7 @@ const Promptbar = () => {
         handleUpdatePrompt,
       }}
     >
-      <Sidebar<Prompt>
+      {isAuthenticated && <Sidebar<Prompt>
         side={'right'}
         isOpen={showPromptbar}
         addItemButtonTitle={t('New prompt')}
@@ -144,7 +147,7 @@ const Promptbar = () => {
         handleCreateItem={handleCreatePrompt}
         handleCreateFolder={() => handleCreateFolder(t('New folder'), 'prompt')}
         handleDrop={handleDrop}
-      />
+      />}
     </PromptbarContext.Provider>
   );
 };

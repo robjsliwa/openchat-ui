@@ -1,4 +1,4 @@
-import { IconClearAll, IconSettings } from '@tabler/icons-react';
+import { IconClearAll, IconSettings, IconLogin } from '@tabler/icons-react';
 import {
   MutableRefObject,
   memo,
@@ -33,13 +33,25 @@ import { ModelSelect } from './ModelSelect';
 import { SystemPrompt } from './SystemPrompt';
 import { TemperatureSlider } from './Temperature';
 import { MemoizedChatMessage } from './MemoizedChatMessage';
+import { useAuth0 } from '@auth0/auth0-react';
+import useSWR from 'swr';
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
 }
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+
 export const Chat = memo(({ stopConversationRef }: Props) => {
   const { t } = useTranslation('chat');
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+    getAccessTokenSilently,
+    loginWithRedirect,
+    handleRedirectCallback,
+  } = useAuth0();
 
   const {
     state: {
@@ -67,6 +79,27 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { data, error } = useSWR(
+    isLoading || !isAuthenticated ? null : apiUrl,
+    async (url) => {
+      const accessToken = await getAccessTokenSilently();
+      //   {
+      //   authorizationParams: {
+      //     audience: auth0Audience,
+      //     scope: 'read:chat',
+      //   },
+      // });
+      // const res = await fetch(url, {
+      //   headers: {
+      //     authorization: `Bearer ${accessToken}`,
+      //   },
+      // });
+      // return res.json();
+      // console.log('accessToken', accessToken);
+      // console.log('user', user);
+    }
+  );
 
   const handleSend = useCallback(
     async (message: Message, deleteCount = 0, plugin: Plugin | null = null) => {
@@ -116,10 +149,12 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           });
         }
         const controller = new AbortController();
+        const accessToken = await getAccessTokenSilently();
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
           },
           signal: controller.signal,
           body,
@@ -347,9 +382,37 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     };
   }, [messagesEndRef]);
 
+  const handleLogin = () => {
+    console.log('login');
+    loginWithRedirect();
+  };
+
+  // if (window.location.search.includes("state=")) {
+  //   const initAuth = async () => {
+  //     const redirectResult = await handleRedirectCallback(window.location.origin);
+  //     console.log('redirectResult', redirectResult);
+  //   };
+  //   initAuth();
+  // }
+
+  if (error) {
+    // return <ErrorMessageDiv error={error} />;
+    console.log('error', error);
+    return <div>error</div>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full w-full justify-center items-center">
+        <Spinner size="16px" className="mx-auto" />
+      </div>
+    );
+  }
+
+
   return (
     <div className="relative flex-1 overflow-hidden bg-white dark:bg-[#343541]">
-      {!(apiKey || serverSideApiKeyIsSet) ? (
+      {!isAuthenticated ? (
         <div className="mx-auto flex h-full w-[300px] flex-col justify-center space-y-6 sm:w-[600px]">
           <div className="text-center text-4xl font-bold text-black dark:text-white">
             Welcome to Chatbot UI
@@ -362,28 +425,11 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           </div>
           <div className="text-center text-gray-500 dark:text-gray-400">
             <div className="mb-2">
-              Chatbot UI allows you to plug in your API key to use this UI with
-              their API.
-            </div>
-            <div className="mb-2">
-              It is <span className="italic">only</span> used to communicate
-              with their API.
-            </div>
-            <div className="mb-2">
-              {t(
-                'Please set your OpenAI API key in the bottom left of the sidebar.',
-              )}
-            </div>
-            <div>
-              {t("If you don't have an OpenAI API key, you can get one here: ")}
-              <a
-                href="https://platform.openai.com/account/api-keys"
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-500 hover:underline"
+              <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                onClick={handleLogin}
               >
-                openai.com
-              </a>
+                Log in
+              </button>
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ import {
   ReconnectInterval,
   createParser,
 } from 'eventsource-parser';
+import { access } from 'fs';
 
 export class OpenAIError extends Error {
   type: string;
@@ -24,6 +25,7 @@ export class OpenAIError extends Error {
 }
 
 export const OpenAIStream = async (
+  accessToken: string,
   model: OpenAIModel,
   systemPrompt: string,
   temperature : number,
@@ -38,7 +40,7 @@ export const OpenAIStream = async (
     headers: {
       'Content-Type': 'application/json',
       ...(OPENAI_API_TYPE === 'openai' && {
-        Authorization: `Bearer ${key ? key : process.env.OPENAI_API_KEY}`
+        Authorization: `Bearer ${accessToken}`
       }),
       ...(OPENAI_API_TYPE === 'azure' && {
         'api-key': `${key ? key : process.env.OPENAI_API_KEY}`

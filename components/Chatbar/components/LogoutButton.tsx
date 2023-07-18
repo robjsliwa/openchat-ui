@@ -1,64 +1,66 @@
-import { IconKey } from '@tabler/icons-react';
-import { KeyboardEvent, useContext, useEffect, useRef, useState } from 'react';
+import { IconLogout } from '@tabler/icons-react';
+// import { KeyboardEvent, useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PluginID, PluginKey } from '@/types/plugin';
-
-import HomeContext from '@/pages/api/home/home.context';
+// import HomeContext from '@/pages/api/home/home.context';
 
 import { SidebarButton } from '@/components/Sidebar/SidebarButton';
 
-import ChatbarContext from '../Chatbar.context';
+// import ChatbarContext from '../Chatbar.context';
 
-export const PluginKeys = () => {
+import { useAuth0 } from '@auth0/auth0-react';
+
+export const LogoutButton = () => {
+  const { logout, isAuthenticated } = useAuth0();
+
   const { t } = useTranslation('sidebar');
 
-  const {
-    state: { pluginKeys },
-  } = useContext(HomeContext);
+  // const {
+  //   state: { pluginKeys },
+  // } = useContext(HomeContext);
 
-  const { handlePluginKeyChange, handleClearPluginKey } =
-    useContext(ChatbarContext);
+  // const { handlePluginKeyChange, handleClearPluginKey } =
+  //   useContext(ChatbarContext);
 
-  const [isChanging, setIsChanging] = useState(false);
+  // const [isChanging, setIsChanging] = useState(false);
 
-  const modalRef = useRef<HTMLDivElement>(null);
+  // const modalRef = useRef<HTMLDivElement>(null);
 
-  const handleEnter = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      setIsChanging(false);
-    }
-  };
+  // const handleEnter = (e: KeyboardEvent<HTMLDivElement>) => {
+  //   if (e.key === 'Enter' && !e.shiftKey) {
+  //     e.preventDefault();
+  //     setIsChanging(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    const handleMouseDown = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        window.addEventListener('mouseup', handleMouseUp);
-      }
-    };
+  // useEffect(() => {
+  //   const handleMouseDown = (e: MouseEvent) => {
+  //     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+  //       window.addEventListener('mouseup', handleMouseUp);
+  //     }
+  //   };
 
-    const handleMouseUp = (e: MouseEvent) => {
-      window.removeEventListener('mouseup', handleMouseUp);
-      setIsChanging(false);
-    };
+  //   const handleMouseUp = (e: MouseEvent) => {
+  //     window.removeEventListener('mouseup', handleMouseUp);
+  //     setIsChanging(false);
+  //   };
 
-    window.addEventListener('mousedown', handleMouseDown);
+  //   window.addEventListener('mousedown', handleMouseDown);
 
-    return () => {
-      window.removeEventListener('mousedown', handleMouseDown);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('mousedown', handleMouseDown);
+  //   };
+  // }, []);
 
   return (
     <>
-      <SidebarButton
-        text={t('Plugin Keys')}
-        icon={<IconKey size={18} />}
-        onClick={() => setIsChanging(true)}
-      />
+      {isAuthenticated && <SidebarButton
+        text={t('Logout')}
+        icon={<IconLogout size={18} />}
+        onClick={() => logout()}
+      />}
 
-      {isChanging && (
+      {/* {isChanging && (
         <div
           className="z-100 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
           onKeyDown={handleEnter}
@@ -229,7 +231,7 @@ export const PluginKeys = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 };

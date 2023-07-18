@@ -12,6 +12,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.2.0",
     "@dqbd/tiktoken": "^1.0.2",
     "@tabler/icons-react": "^2.9.0",
     "eventsource-parser": "^0.1.0",
@@ -29,6 +30,7 @@
     "rehype-mathjax": "^4.0.2",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
+    "swr": "^2.2.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

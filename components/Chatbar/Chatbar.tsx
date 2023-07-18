@@ -25,9 +25,12 @@ import ChatbarContext from './Chatbar.context';
 import { ChatbarInitialState, initialState } from './Chatbar.state';
 
 import { v4 as uuidv4 } from 'uuid';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export const Chatbar = () => {
   const { t } = useTranslation('sidebar');
+
+  const { isAuthenticated } = useAuth0();
 
   const chatBarContextValue = useCreateReducer<ChatbarInitialState>({
     initialState,
@@ -219,7 +222,7 @@ export const Chatbar = () => {
         handleApiKeyChange,
       }}
     >
-      <Sidebar<Conversation>
+      {isAuthenticated && <Sidebar<Conversation>
         side={'left'}
         isOpen={showChatbar}
         addItemButtonTitle={t('New chat')}
@@ -235,7 +238,7 @@ export const Chatbar = () => {
         handleCreateFolder={() => handleCreateFolder(t('New folder'), 'chat')}
         handleDrop={handleDrop}
         footerComponent={<ChatbarSettings />}
-      />
+      />}
     </ChatbarContext.Provider>
   );
 };

@@ -8,6 +8,7 @@ export const config = {
 
 const handler = async (req: Request): Promise<Response> => {
   try {
+    const accessToken = req.headers.get('authorization')?.split(' ')[1] || "";
     const { key } = (await req.json()) as {
       key: string;
     };
@@ -21,7 +22,7 @@ const handler = async (req: Request): Promise<Response> => {
       headers: {
         'Content-Type': 'application/json',
         ...(OPENAI_API_TYPE === 'openai' && {
-          Authorization: `Bearer ${key ? key : process.env.OPENAI_API_KEY}`
+          Authorization: `Bearer ${accessToken}`
         }),
         ...(OPENAI_API_TYPE === 'azure' && {
           'api-key': `${key ? key : process.env.OPENAI_API_KEY}`
